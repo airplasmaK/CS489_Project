@@ -10,16 +10,19 @@ ______________________________________
 6. 서브도메인 갯수 
 7. http/https 사용여부  -->parsing 함수 사용해서 
 '''
+#parsing
+# pip install parse
+from parse import *
 from enum import Enum
+
+feature = []
 
 class Skill(Enum):
     legitimate = 0
     suspicious = 1
     phishing = 2
 
-#parsing
-# pip install parse
-from parse import *
+
 
 def parsing(input_url):
     # local_input = input_url
@@ -65,9 +68,9 @@ def include_double_slash(input_url):
     return Skill.legitimate
 
 # - included in URL
-def include_double_slash(input_url):
+def include_hyp_slash(input_url):
     domain = parsing(input_url)["domain"]
-    if "//" in domain:
+    if "-" in domain:
         print("피싱")
         return Skill.phishing
     return Skill.legitimate
@@ -87,3 +90,13 @@ def which_protocol(input_url):
         print("Suspicious")
         return Skill.suspicious
     return Skill.legitimate
+
+
+def make_feature(input_url):
+    
+    length_check[input_url]
+    include_at[input_url]
+    include_double_slash[input_url]
+    too_many_subdomain[input_url]
+    which_protocol[input_url]
+    include_hyp_slash[input_url]
