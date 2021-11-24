@@ -14,6 +14,9 @@ ______________________________________
 # pip install parse
 from parse import *
 from enum import Enum
+import numpy as np
+import torch
+import torch.nn as nn
 
 feature_datas = []
 
@@ -113,3 +116,9 @@ for line in f:
 
 f.close()
 print(feature_datas)
+
+W = torch.zeros((feature_num, 1), requires_grad = True)
+b = torch.zeros(1, requires_grad = True)
+
+hypothesis = 1 / (1 + torch.exp(-(feature_datas.matmul(W) + b)))
+
