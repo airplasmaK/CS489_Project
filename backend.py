@@ -17,6 +17,7 @@ from enum import Enum
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.optimizer as optim
 
 feature_datas = []
 
@@ -122,3 +123,21 @@ b = torch.zeros(1, requires_grad = True)
 
 hypothesis = 1 / (1 + torch.exp(-(feature_datas.matmul(W) + b)))
 
+optimizer = optim.SGD([W, b], lr=1)
+
+nb_epochs = 1000
+for epoch in range(nb_epochs + 1):
+
+    # Cost 계산
+    hypothesis = torch.sigmoid(x_train.matmul(W) + b)
+    cost = -(y_train * torch.log(hypothesis) + 
+             (1 - y_train) * torch.log(1 - hypothesis)).mean()
+
+    optimizer.zero_grad()
+    cost.backward()
+    optimizer.step()
+
+    if epoch % 100 == 0:
+        print('Epoch {:4d}/{} Cost: {:.6f}'.format(
+            epoch, nb_epochs, cost.item()
+        ))
