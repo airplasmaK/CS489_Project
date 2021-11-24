@@ -87,7 +87,3 @@ def which_protocol(input_url):
         print("Suspicious")
         return Skill.suspicious
     return Skill.legitimate
-# 4. // 포함
-# 5. - 포함
-# 6. 서브도메인 갯수
-# 7. http/https 사용여부
