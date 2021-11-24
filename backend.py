@@ -55,3 +55,35 @@ def include_at(input_url):
     return Skill.legitimate
 
 include_at("https://naver.com@bit.ly/123")
+
+# // included in URL
+def include_double_slash(input_url):
+    domain = parsing(input_url)["domain"]
+    if "//" in domain:
+        print("피싱")
+        return Skill.phishing
+    return Skill.legitimate
+
+# - included in URL
+def include_double_slash(input_url):
+    domain = parsing(input_url)["domain"]
+    if "//" in domain:
+        print("피싱")
+        return Skill.phishing
+    return Skill.legitimate
+
+# Too many subdomain
+def too_many_subdomain(input_url):
+    domain = parsing(input_url)["domain"]
+    domain_list = str(domain).split(".")
+    if len(domain_list) > 3:    # Maybe 2 --> we need to tune hyperparameter
+        print("피싱")
+        return Skill.phishing   # Or should it be suspicious?
+    return Skill.legitimate
+    
+def which_protocol(input_url):
+    pt = parsing(input_url)["protocol"]
+    if pt == "http":
+        print("Suspicious")
+        return Skill.suspicious
+    return Skill.legitimate
