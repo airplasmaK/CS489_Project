@@ -15,7 +15,7 @@ ______________________________________
 from parse import *
 from enum import Enum
 
-feature = []
+feature_datas = []
 
 class Skill(Enum):
     legitimate = 0
@@ -30,10 +30,12 @@ def parsing(input_url):
     # print(protocal)
     
     result = parse("{protocol}//{domain}/{path}", input_url)
+    if result == None:
+        result = parse("{protocol}//{domain}/", input_url)
     # print(result["protocol"])
     return result
 
-parsing("https://naver.com/123")
+# parsing("https://naver.com/123")
 
 # 길이 
 def length_check(input_url):
@@ -51,19 +53,20 @@ def short_url(input_url):
 
 # @포함 
 def include_at(input_url):
+    # print("include_at: ",input_url)
     domain = parsing(input_url)["domain"]
     if "@" in domain:
-        print("피싱")
+        # print("피싱")
         return Skill.phishing
     return Skill.legitimate
 
-include_at("https://naver.com@bit.ly/123")
+include_at("https://naver.com@bit.ly/")
 
 # // included in URL
 def include_double_slash(input_url):
     domain = parsing(input_url)["domain"]
     if "//" in domain:
-        print("피싱")
+        # print("피싱")
         return Skill.phishing
     return Skill.legitimate
 
@@ -71,7 +74,7 @@ def include_double_slash(input_url):
 def include_hyp_slash(input_url):
     domain = parsing(input_url)["domain"]
     if "-" in domain:
-        print("피싱")
+        # print("피싱")
         return Skill.phishing
     return Skill.legitimate
 
@@ -80,23 +83,33 @@ def too_many_subdomain(input_url):
     domain = parsing(input_url)["domain"]
     domain_list = str(domain).split(".")
     if len(domain_list) > 3:    # Maybe 2 --> we need to tune hyperparameter
-        print("피싱")
+        # print("피싱")
         return Skill.phishing   # Or should it be suspicious?
     return Skill.legitimate
     
 def which_protocol(input_url):
     pt = parsing(input_url)["protocol"]
     if pt == "http":
-        print("Suspicious")
+        # print("Suspicious")
         return Skill.suspicious
     return Skill.legitimate
 
 
 def make_feature(input_url):
-    
-    length_check[input_url]
-    include_at[input_url]
-    include_double_slash[input_url]
-    too_many_subdomain[input_url]
-    which_protocol[input_url]
-    include_hyp_slash[input_url]
+    feature = [0 for i in range(6)]
+    feature[0] = length_check(input_url)
+    feature[1] = include_at(input_url)
+    feature[2] = include_double_slash(input_url)
+    feature[3] = too_many_subdomain(input_url)
+    feature[4] = which_protocol(input_url)
+    feature[5] = include_hyp_slash(input_url)
+
+    feature_datas.append(feature)
+
+f = open("phising_url.txt", 'r')
+# print(datas)
+for line in f:
+    make_feature(line.strip())
+
+f.close()
+print(feature_datas)
