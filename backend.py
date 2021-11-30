@@ -10,14 +10,16 @@ ______________________________________
 6. 서브도메인 갯수 
 7. http/https 사용여부  -->parsing 함수 사용해서 
 '''
-#parsing
-# pip install parse
-from parse import *
+import csv
 from enum import Enum
+
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.optimizer as optim
+import torch.optim as optim
+#parsing
+# pip install parse
+from parse import *
 
 feature_datas = []
 
@@ -100,15 +102,20 @@ def which_protocol(input_url):
 
 
 def make_feature(input_url):
-    feature = [0 for i in range(6)]
+    feature = [0 for i in range(7)]
     feature[0] = length_check(input_url)
     feature[1] = include_at(input_url)
     feature[2] = include_double_slash(input_url)
     feature[3] = too_many_subdomain(input_url)
     feature[4] = which_protocol(input_url)
     feature[5] = include_hyp_slash(input_url)
+    feature[6] = 1
 
     feature_datas.append(feature)
+
+# Shape of feature_data
+# feature[0 ~ 5]=> The phishing detecting features (length, @, //, etc)
+# feature[6] => "Label": 1 is for phishing, 0 is for legitimate)
 
 f = open("phising_url.txt", 'r')
 # print(datas)
@@ -116,9 +123,29 @@ for line in f:
     make_feature(line.strip())
 
 f.close()
-print(feature_datas)
 
-W = torch.zeros((feature_num, 1), requires_grad = True)
+print(np.array(feature_datas).shape)
+
+# Read the non-phishing sites
+n = open("top-1m.csv")
+idx = csv.reader(n)
+not_ph = []
+for line in idx:
+    not_ph.append(line[1])
+    if len(not_ph) > 2000:
+        break
+
+# Current Problem 1: Legitimate URLs do not have the protocols (eg. http, https)
+for i in not_ph:
+    make_feature(i)
+
+
+'''
+
+
+# Below is for logistic regression
+
+W = torch.zeros((5, 1), requires_grad = True)
 b = torch.zeros(1, requires_grad = True)
 
 hypothesis = 1 / (1 + torch.exp(-(feature_datas.matmul(W) + b)))
@@ -141,3 +168,5 @@ for epoch in range(nb_epochs + 1):
         print('Epoch {:4d}/{} Cost: {:.6f}'.format(
             epoch, nb_epochs, cost.item()
         ))
+
+'''
