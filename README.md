@@ -2,3 +2,5 @@
 
   
 pip install parse 
+pip install tld
+pip install imblearn
