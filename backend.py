@@ -14,12 +14,15 @@ import csv
 from enum import Enum
 
 import numpy as np
-import torch
-import torch.nn as nn
-import torch.optim as optim
+
+import keras
+from keras.callbacks import ReduceLROnPlateau
+from keras.models import Sequential
+import keras.optimizers
+from keras.layers import Dense, Conv1D, MaxPooling1D, Flatten, Dropout, BatchNormalization, Activation
+from keras.callbacks import ModelCheckpoint
 #parsing
 # pip install parse
-from parse import *
 
 feature_datas = []
 
@@ -117,55 +120,16 @@ def make_feature(input_url):
 # feature[0 ~ 5]=> The phishing detecting features (length, @, //, etc)
 # feature[6] => "Label": 1 is for phishing, 0 is for legitimate)
 
-f = open("phising_url.txt", 'r')
-# print(datas)
-for line in f:
-    make_feature(line.strip())
+url_MLP = Sequential([
+    Dense(32, activation = 'relu', input_shape = (16, )),
+    Dense(16, activation = 'relu'),
+    Dense(8, activation = 'relu'),
+    Dense(4, activation = 'relu'),
+    Dense(1, activation = 'sigmoid')
+])
 
-f.close()
+optimizer = keras.optimizers.Adam(lr = 0.0001)
 
-print(np.array(feature_datas).shape)
+checkpoint = ModelCheckpoint('url_MLP.h5', monitor = 'val', mode  ='max', verbose = 2, save_best_only=True)
 
-# Read the non-phishing sites
-n = open("top-1m.csv")
-idx = csv.reader(n)
-not_ph = []
-for line in idx:
-    not_ph.append(line[1])
-    if len(not_ph) > 2000:
-        break
-
-# Current Problem 1: Legitimate URLs do not have the protocols (eg. http, https)
-for i in not_ph:
-    make_feature(i)
-
-
-'''
-
-# Below is for logistic regression
-
-W = torch.zeros((5, 1), requires_grad = True)
-b = torch.zeros(1, requires_grad = True)
-
-hypothesis = 1 / (1 + torch.exp(-(feature_datas.matmul(W) + b)))
-
-optimizer = optim.SGD([W, b], lr=1)
-
-nb_epochs = 1000
-for epoch in range(nb_epochs + 1):
-
-    # Cost 계산
-    hypothesis = torch.sigmoid(x_train.matmul(W) + b)
-    cost = -(y_train * torch.log(hypothesis) + 
-             (1 - y_train) * torch.log(1 - hypothesis)).mean()
-
-    optimizer.zero_grad()
-    cost.backward()
-    optimizer.step()
-
-    if epoch % 100 == 0:
-        print('Epoch {:4d}/{} Cost: {:.6f}'.format(
-            epoch, nb_epochs, cost.item()
-        ))
-
-'''
+url_MLP.fit()
