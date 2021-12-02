@@ -142,7 +142,6 @@ for i in not_ph:
 
 '''
 
-
 # Below is for logistic regression
 
 W = torch.zeros((5, 1), requires_grad = True)
