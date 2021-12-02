@@ -9,6 +9,11 @@ import re
 from urllib.parse import urlparse
 from tld import get_tld
 
+from keras.models import Sequential
+import keras.optimizers
+from keras.layers import Dense, Conv1D, MaxPooling1D, Flatten, Dropout, BatchNormalization, Activation
+from keras.callbacks import ModelCheckpoint
+
 urldata = pd.read_csv('urldata.csv')
 
 print(urldata.shape)
@@ -129,3 +134,18 @@ print("Shape of x_train: ", x_train.shape)
 print("Shape of x_valid: ", x_test.shape)
 print("Shape of y_train: ", y_train.shape)
 print("Shape of y_valid: ", y_test.shape)
+
+
+url_MLP = Sequential([
+    Dense(32, activation = 'relu', input_shape = (16, )),
+    Dense(16, activation = 'relu'),
+    Dense(8, activation = 'relu'),
+    Dense(4, activation = 'relu'),
+    Dense(1, activation = 'sigmoid')
+])
+
+optimizer = keras.optimizers.Adam(lr = 0.0001)
+
+checkpoint = ModelCheckpoint('url_MLP.h5', monitor = 'val', mode  ='max', verbose = 2, save_best_only=True)
+
+url_MLP.fit()
