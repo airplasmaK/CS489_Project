@@ -9,9 +9,10 @@ import re
 from urllib.parse import urlparse
 from tld import get_tld
 
+import tensorflow as tf
 from keras.models import Sequential
 import keras.optimizers
-from keras.layers import Dense, Conv1D, MaxPooling1D, Flatten, Dropout, BatchNormalization, Activation
+from keras.layers import Dense
 from keras.callbacks import ModelCheckpoint
 
 urldata = pd.read_csv('urldata.csv')
@@ -105,6 +106,12 @@ def shortening_service(url):
 urldata['short_url'] = urldata['url'].apply(lambda i: shortening_service(i))
 
 # print("---------------------------------------------------")
+
+# print(len(urldata)) -> 420464
+
+urldata.loc[urldata['label'] == 'bad', 'label'] = 1
+urldata.loc[urldata['label'] == 'good', 'label'] = 0
+
 print(urldata.head())
 
 from imblearn.over_sampling import SMOTE
@@ -115,7 +122,7 @@ x = urldata[['hostname_length',
        'count-letters', 'count_dir', 'use_of_ip']]
 
 #Dependent Variable
-y = urldata['label']
+y = urldata['label'].astype(int)
 
 x_sample, y_sample = SMOTE().fit_resample(x, y.values.ravel())
 
@@ -123,17 +130,17 @@ x_sample = pd.DataFrame(x_sample)
 y_sample = pd.DataFrame(y_sample)
 
 # checking the sizes of the sample data
-print("Size of x-sample :", x_sample.shape)
-print("Size of y-sample :", y_sample.shape)
+# print("Size of x-sample :", x_sample.shape)
+# print("Size of y-sample :", y_sample.shape)
 
 #Train test split
 from sklearn.model_selection import train_test_split
 
 x_train, x_test, y_train, y_test = train_test_split(x_sample, y_sample, test_size = 0.2)
-print("Shape of x_train: ", x_train.shape)
-print("Shape of x_valid: ", x_test.shape)
-print("Shape of y_train: ", y_train.shape)
-print("Shape of y_valid: ", y_test.shape)
+# print("Shape of x_train: ", x_train.shape)
+# print("Shape of x_valid: ", x_test.shape)
+# print("Shape of y_train: ", y_train.shape)
+# print("Shape of y_valid: ", y_test.shape)
 
 
 url_MLP = Sequential([
@@ -144,9 +151,11 @@ url_MLP = Sequential([
     Dense(1, activation = 'sigmoid')
 ])
 
-optim = keras.optimizers.Adam(lr = 0.0001)
+optim = tf.keras.optimizers.Adam(learning_rate = 0.0001)
 url_MLP.compile(optimizer = optim, loss = 'binary_crossentropy', metrics = ['acc'])
 
 checkpoint = ModelCheckpoint('url_MLP.h5', monitor = 'val', mode  ='max', verbose = 2, save_best_only=True)
 
 url_MLP.fit(x_train, y_train, batch_size=512, epochs=10, validation_data = (x_test, y_test), callbacks = [checkpoint])
+
+url_MLP.save('url_MLP.h5')
