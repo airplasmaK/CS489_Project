@@ -2,11 +2,29 @@
 
 <html>
   <head>
-    <link rel="stylesheet" href="button.css">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="popup.css">
     <script type="text/javascript" src="jquery-3.1.1.min.js"></script>
-     
-  </head>
-  <body>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="popup.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  </head>
+  <body style="background-color:#F5F6F8">
+    <div style="width: 200px; height: 53px;">
+      <span class="title"style="line-height: 50px; font-size: 20px; font-weight: normal;"> &nbsp;&nbsp; Phishing Detection </span>
+     
+    </div>
+    <div style="width:200px; height:57px">
+      <div id=light_back style="margin-left:15px;  border-radius: 25px;width:160px;height:40px; background-color: #FFF; border:1px solid #D4D4D4;">
+        <button class="favorite styled" id="low" type="button" style="padding-top:2.5px;" name="low"> Low </button>
+        <button class="favorite styled" id="mid" type="button" style="padding-top:2.5px; padding-left:5px" name="mid"> Mid </button>
+        <button class="favorite styled" id="high" type="button" style="padding-top:2.5px; padding-left:4px;"name="high"> High </button>
+       
+      </div>
+    </div>
+    <div style="width:200px; height:20px" class="level">
+      <span style="padding-left: 12px; ">You can set the</span><span style="color:#1F99D3;"> level of detection!</span>
+    </div>
   </body>
 </html>
