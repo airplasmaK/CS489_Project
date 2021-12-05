@@ -118,7 +118,7 @@ from imblearn.over_sampling import SMOTE
 
 x = urldata[['hostname_length',
        'path_length', 'fd_length', 'count-', 'count@', 'count?',
-       'count%', 'count.', 'count=', 'count-www', 'count-digits',
+       'count%', 'count.', 'count=', 'count-digits',
        'count-letters', 'count_dir', 'use_of_ip']]
 
 #Dependent Variable
@@ -136,7 +136,7 @@ y_sample = pd.DataFrame(y_sample)
 #Train test split
 from sklearn.model_selection import train_test_split
 
-x_train, x_test, y_train, y_test = train_test_split(x_sample, y_sample, test_size = 0.2)
+x_train, x_test, y_train, y_test = train_test_split(x_sample, y_sample, test_size = 0.2, shuffle=True)
 # print("Shape of x_train: ", x_train.shape)
 # print("Shape of x_valid: ", x_test.shape)
 # print("Shape of y_train: ", y_train.shape)
@@ -144,7 +144,7 @@ x_train, x_test, y_train, y_test = train_test_split(x_sample, y_sample, test_siz
 
 
 url_MLP = Sequential([
-    Dense(32, activation = 'relu', input_shape = (14, )),
+    Dense(32, activation = 'relu', input_shape = (13, )),
     Dense(16, activation = 'relu'),
     Dense(8, activation = 'relu'),
     Dense(4, activation = 'relu'),
@@ -154,8 +154,8 @@ url_MLP = Sequential([
 optim = tf.keras.optimizers.Adam(learning_rate = 0.0001)
 url_MLP.compile(optimizer = optim, loss = 'binary_crossentropy', metrics = ['acc'])
 
-checkpoint = ModelCheckpoint('url_MLP.h5', monitor = 'val', mode  ='max', verbose = 2, save_best_only=True)
+checkpoint = ModelCheckpoint('url_MLP_no_www_shuffle.h5', monitor = 'val', mode  ='max', verbose = 2, save_best_only=True)
 
 url_MLP.fit(x_train, y_train, batch_size=256, epochs=30, validation_data = (x_test, y_test), callbacks = [checkpoint])
 
-url_MLP.save('url_MLP.h5')
+url_MLP.save('url_MLP_no_www_shuffle.h5')
