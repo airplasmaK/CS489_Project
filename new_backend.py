@@ -118,7 +118,7 @@ from imblearn.over_sampling import SMOTE
 
 x = urldata[['hostname_length',
        'path_length', 'fd_length', 'count-', 'count@', 'count?',
-       'count%', 'count.', 'count=', 'count-http','count-https', 'count-www', 'count-digits',
+       'count%', 'count.', 'count=', 'count-www', 'count-digits',
        'count-letters', 'count_dir', 'use_of_ip']]
 
 #Dependent Variable
@@ -144,7 +144,7 @@ x_train, x_test, y_train, y_test = train_test_split(x_sample, y_sample, test_siz
 
 
 url_MLP = Sequential([
-    Dense(32, activation = 'relu', input_shape = (16, )),
+    Dense(32, activation = 'relu', input_shape = (14, )),
     Dense(16, activation = 'relu'),
     Dense(8, activation = 'relu'),
     Dense(4, activation = 'relu'),
