@@ -156,6 +156,6 @@ url_MLP.compile(optimizer = optim, loss = 'binary_crossentropy', metrics = ['acc
 
 checkpoint = ModelCheckpoint('url_MLP.h5', monitor = 'val', mode  ='max', verbose = 2, save_best_only=True)
 
-url_MLP.fit(x_train, y_train, batch_size=512, epochs=10, validation_data = (x_test, y_test), callbacks = [checkpoint])
+url_MLP.fit(x_train, y_train, batch_size=256, epochs=30, validation_data = (x_test, y_test), callbacks = [checkpoint])
 
 url_MLP.save('url_MLP.h5')
